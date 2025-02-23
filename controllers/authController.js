@@ -1,20 +1,29 @@
-const passport = require("passport");
+import User from "../models/User";
 
-// Controlador de autenticación con Google
-exports.authGoogle = passport.authenticate("google", {
-  scope: ["profile", "email"],
-});
+registrarUsuario = async (req, res) => {
+  const { nombre, email, rol, googleId, foto } = req.body;
 
-// Callback después de la autenticación exitosa
-exports.authGoogleCallback = passport.authenticate("google", {
-  failureRedirect: "/login",
-  successRedirect: "/dashboard", // O donde quieras redirigir después del login
-});
+  try {
+    let usuario = await User.findOne({ googleId });
 
-// Guardar usuario en la sesión
-exports.authSuccess = async (req, res) => {
-  if (!req.user) {
-    return res.status(401).json({ mensaje: "No autorizado" });
+    if (usuario) {
+      return res.status(400).json({ mensaje: "Usuario ya registrado" });
+    }
+
+    usuario = new User({
+      nombre,
+      email,
+      rol,
+      googleId,
+      secreto,
+      foto,
+    });
+
+    await usuario.save();
+    res
+      .status(201)
+      .json({ mensaje: "Usuario registrado exitosamente", usuario });
+  } catch (error) {
+    res.status(500).json({ mensaje: "Error en el servidor", error });
   }
-  res.status(200).json({ mensaje: "Autenticado", usuario: req.user });
 };

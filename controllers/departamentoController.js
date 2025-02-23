@@ -30,6 +30,7 @@ export function publicarDepartamento(req, res) {
     precio,
     caracteristicas,
     condiciones,
+    aprobado: false,
   });
 
   nuevoDepartamento

@@ -30,6 +30,7 @@ const DepartamentoSchema = new Schema({
     type: Date,
     default: Date.now,
   },
+  aprobado: { type: Boolean, default: false }, // El campo de aprobación
 });
 
 export default model("Departament", DepartamentoSchema);
