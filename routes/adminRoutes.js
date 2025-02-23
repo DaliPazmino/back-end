@@ -1,18 +1,17 @@
-import { Router } from "express";
-const router = Router();
+import express from "express";
+
+import { authenticate } from "../middleware/authMiddleware.js";
 import {
-  verPublicacionesPendientes,
-  aprobarPublicacion,
-  rechazarPublicacion,
-} from "../controllers/adminController";
+  aprobarDepartamento,
+  desaprobarDepartamento,
+} from "../controllers/adminController.js";
 
-// Ver publicaciones pendientes para aprobación
-router.get("/admin/publicaciones", verPublicacionesPendientes);
+const router = express.Router();
 
-// Aprobar una publicación
-router.put("/admin/publicaciones/aprobar/:id", aprobarPublicacion);
+// Ruta para aprobar un departamento
+router.put("/aprobar/:id", authenticate, aprobarDepartamento);
 
-// Rechazar una publicación
-router.delete("/admin/publicaciones/rechazar/:id", rechazarPublicacion);
+// Ruta para desaprobar un departamento
+router.put("/desaprobar/:id", authenticate, desaprobarDepartamento);
 
 export default router;

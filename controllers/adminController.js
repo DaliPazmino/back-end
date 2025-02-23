@@ -1,66 +1,76 @@
-import { find, findById } from "../models/Publicacion";
+import Departament from "../models/Departament.js";
 
-// Ver publicaciones pendientes para aprobación
-export async function verPublicacionesPendientes(req, res) {
+// Controlador para aprobar un departamento
+export async function aprobarDepartamento(req, res) {
   try {
-    if (!req.user || req.user.role !== "admin") {
-      return res.status(401).json({ mensaje: "Acceso no autorizado" });
+    // Verificar que el usuario tiene el rol de administrador
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message:
+          "Acción no permitida. Solo administradores pueden aprobar departamentos.",
+      });
     }
 
-    // Obtener todas las publicaciones que necesitan aprobación
-    const publicacionesPendientes = await find({
-      aprobado: false,
-    }).populate("arrendadorId");
+    const { id } = req.params; // ID del departamento a aprobar
 
-    res.status(200).json({ publicaciones: publicacionesPendientes });
+    // Buscar el departamento en la base de datos
+    const departamento = await Departament.findById(id);
+
+    if (!departamento) {
+      return res.status(404).json({ message: "Departamento no encontrado" });
+    }
+
+    // Actualizar el estado de aprobado a true
+    departamento.aprobado = true;
+
+    // Guardar los cambios
+    await departamento.save();
+
+    res
+      .status(200)
+      .json({ message: "Departamento aprobado correctamente", departamento });
   } catch (error) {
-    res.status(500).json({ mensaje: "Error en el servidor", error });
+    res
+      .status(500)
+      .json({ message: "Error al aprobar el departamento", error });
+
+    console.log(error);
   }
 }
 
-// Aprobar una publicación
-export async function aprobarPublicacion(req, res) {
+// Controlador para desaprobar un departamento
+export async function desaprobarDepartamento(req, res) {
   try {
-    if (!req.user || req.user.rol !== "admin") {
-      return res.status(401).json({ mensaje: "Acceso no autorizado" });
+    // Verificar que el usuario tiene el rol de administrador
+    if (req.user.role !== "admin") {
+      return res.status(403).json({
+        message:
+          "Acción no permitida. Solo administradores pueden desaprobar departamentos.",
+      });
     }
 
-    const { id } = req.params;
-    const publicacion = await findById(id);
+    const { id } = req.params; // ID del departamento a desaprobar
 
-    if (!publicacion) {
-      return res.status(404).json({ mensaje: "Publicación no encontrada" });
+    // Buscar el departamento en la base de datos
+    const departamento = await Departament.findById(id);
+
+    if (!departamento) {
+      return res.status(404).json({ message: "Departamento no encontrado" });
     }
 
-    // Aprobar la publicación
-    publicacion.aprobado = true;
-    await publicacion.save();
+    // Actualizar el estado de aprobado a false
+    departamento.aprobado = false;
 
-    res.status(200).json({ mensaje: "Publicación aprobada" });
+    // Guardar los cambios
+    await departamento.save();
+
+    res.status(200).json({
+      message: "Departamento desaprobado correctamente",
+      departamento,
+    });
   } catch (error) {
-    res.status(500).json({ mensaje: "Error en el servidor", error });
-  }
-}
-
-// Rechazar una publicación
-export async function rechazarPublicacion(req, res) {
-  try {
-    if (!req.user || req.user.rol !== "admin") {
-      return res.status(401).json({ mensaje: "Acceso no autorizado" });
-    }
-
-    const { id } = req.params;
-    const publicacion = await findById(id);
-
-    if (!publicacion) {
-      return res.status(404).json({ mensaje: "Publicación no encontrada" });
-    }
-
-    // Rechazar la publicación (eliminándola o marcándola como rechazada)
-    await publicacion.remove();
-
-    res.status(200).json({ mensaje: "Publicación rechazada y eliminada" });
-  } catch (error) {
-    res.status(500).json({ mensaje: "Error en el servidor", error });
+    res
+      .status(500)
+      .json({ message: "Error al desaprobar el departamento", error });
   }
 }
