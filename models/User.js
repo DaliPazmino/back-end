@@ -10,6 +10,7 @@ const UserSchema = new Schema({
     enum: ["admin", "arrendador", "arrendatario"],
     default: "arrendatario",
   },
+  verificado: { type: Boolean, default: false }, // Nuevo campo para verificar al arrendador
   createdAt: { type: Date, default: Date.now },
 });
 
