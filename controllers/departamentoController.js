@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).array("fotos", 5); // Permitir hasta 5 fotos
 
 export function publicarDepartamento(req, res) {
-  if (!req.user || req.user.rol !== "arrendador") {
+  if (!req.user || req.user.role !== "arrendador") {
     return res
       .status(403)
       .json({ message: "Solo los arrendadores pueden publicar departamentos" });
