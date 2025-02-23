@@ -132,3 +132,36 @@ export async function obtenerDepartamentosDisponibles(req, res) {
     });
   }
 }
+
+export async function filtrarDepartamentos(req, res) {
+  try {
+    const { precioMin, precioMax, ubicacion, habitaciones, caracteristicas } =
+      req.query;
+
+    let filtro = { aprobado: true, disponible: true }; // Solo mostrar departamentos aprobados y disponibles
+
+    if (precioMin)
+      filtro.precio = { ...filtro.precio, $gte: Number(precioMin) };
+    if (precioMax)
+      filtro.precio = { ...filtro.precio, $lte: Number(precioMax) };
+    if (ubicacion) filtro.ubicacion = { $regex: new RegExp(ubicacion, "i") }; // Búsqueda insensible a mayúsculas
+    if (habitaciones) filtro.habitaciones = Number(habitaciones);
+    if (caracteristicas)
+      filtro.caracteristicas = { $all: caracteristicas.split(",") }; // Características como WiFi, Piscina, etc.
+
+    const departamentos = await Departament.find(filtro);
+
+    if (departamentos.length === 0) {
+      return res
+        .status(404)
+        .json({
+          message:
+            "No se encontraron departamentos con los filtros seleccionados.",
+        });
+    }
+
+    res.status(200).json(departamentos);
+  } catch (error) {
+    res.status(500).json({ message: "Error al filtrar departamentos", error });
+  }
+}

@@ -14,6 +14,9 @@ const DepartamentoSchema = new Schema({
     type: Number,
     required: true,
   },
+  ubicacion: { type: String, required: true },
+  habitaciones: { type: Number, required: true },
+
   caracteristicas: {
     type: [String],
     required: true,

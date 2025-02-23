@@ -4,6 +4,7 @@ import {
   obtenerDepartamentosPorArrendador,
   actualizarDepartamento,
   obtenerDepartamentosDisponibles,
+  filtrarDepartamentos,
 } from "../controllers/departamentoController.js";
 import { authenticate, isArrendador } from "../middleware/authMiddleware.js";
 
@@ -16,5 +17,6 @@ router.post("/publicarDep", authenticate, isArrendador, publicarDepartamento);
 router.get("/arrendador/:id", obtenerDepartamentosPorArrendador);
 router.patch("/actualizarDep/:id", actualizarDepartamento);
 router.get("/departamentosArrendador", obtenerDepartamentosDisponibles);
+router.get("/filtrar", filtrarDepartamentos);
 
 export default router;
