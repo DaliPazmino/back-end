@@ -2,6 +2,8 @@ import express from "express";
 import {
   publicarDepartamento,
   obtenerDepartamentosPorArrendador,
+  actualizarDepartamento,
+  obtenerDepartamentosDisponibles,
 } from "../controllers/departamentoController.js";
 import { authenticate, isArrendador } from "../middleware/authMiddleware.js";
 
@@ -12,5 +14,7 @@ router.post("/publicarDep", authenticate, isArrendador, publicarDepartamento);
 
 // Ruta para obtener departamentos de un arrendador
 router.get("/arrendador/:id", obtenerDepartamentosPorArrendador);
+router.patch("/actualizarDep/:id", actualizarDepartamento);
+router.get("/departamentosArrendador", obtenerDepartamentosDisponibles);
 
 export default router;

@@ -3,7 +3,7 @@ import { find, findById } from "../models/Publicacion";
 // Ver publicaciones pendientes para aprobación
 export async function verPublicacionesPendientes(req, res) {
   try {
-    if (!req.user || req.user.rol !== "admin") {
+    if (!req.user || req.user.role !== "admin") {
       return res.status(401).json({ mensaje: "Acceso no autorizado" });
     }
 

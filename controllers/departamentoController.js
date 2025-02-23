@@ -30,7 +30,7 @@ export function publicarDepartamento(req, res) {
     precio,
     caracteristicas,
     condiciones,
-
+    disponible: true,
     aprobado: false,
     arrendador: req.user.id, // Asociar al arrendador autenticado
   });
@@ -46,6 +46,50 @@ export function publicarDepartamento(req, res) {
 }
 
 export default upload;
+
+export async function actualizarDepartamento(req, res) {
+  // Verifica si el usuario está autenticado y tiene el rol de arrendador
+
+  const { id } = req.params; // ID del departamento desde la URL
+  const {
+    titulo,
+    descripcion,
+    precio,
+    caracteristicas,
+    condiciones,
+    disponible,
+  } = req.body;
+
+  try {
+    // Buscar y actualizar el departamento por su ID
+    const departamentoActualizado = await Departament.findByIdAndUpdate(
+      id, // ID del departamento a actualizar
+      {
+        titulo,
+        descripcion,
+        precio,
+        caracteristicas,
+        condiciones,
+        disponible,
+        aprobado: false,
+      }, // Nuevos valores a actualizar
+      { new: true } // Devuelve el documento actualizado
+    );
+
+    // Si no se encuentra el departamento, devuelve error
+    if (!departamentoActualizado) {
+      return res.status(404).json({ message: "Departamento no encontrado" });
+    }
+
+    // Devuelve el departamento actualizado
+    res.status(200).json(departamentoActualizado);
+  } catch (error) {
+    // En caso de error al actualizar el departamento
+    res
+      .status(500)
+      .json({ message: "Error al actualizar el departamento", error });
+  }
+}
 
 export async function obtenerDepartamentosPorArrendador(req, res) {
   try {
@@ -66,5 +110,25 @@ export async function obtenerDepartamentosPorArrendador(req, res) {
     res
       .status(500)
       .json({ message: "Error al obtener los departamentos", error });
+  }
+}
+export async function obtenerDepartamentosDisponibles(req, res) {
+  try {
+    const departamentosDisponibles = await Departament.find({
+      disponible: true, // Solo los departamentos que están disponibles
+    });
+
+    if (departamentosDisponibles.length === 0) {
+      return res
+        .status(404)
+        .json({ message: "No tienes departamentos disponibles" });
+    }
+
+    res.status(200).json(departamentosDisponibles);
+  } catch (error) {
+    res.status(500).json({
+      message: "Error al obtener los departamentos disponibles",
+      error: error.message || error,
+    });
   }
 }
