@@ -1,9 +1,13 @@
 // routes/departamentoRoutes.js
 import { Router } from "express";
-import { publicarDepartamento } from "../controllers/departamentoController.js";
+import upload, {
+  obtenerDepartamentosPorArrendador,
+  publicarDepartamento,
+} from "../controllers/departamentoController.js";
 
 const router = Router();
 
-router.post("/departament", publicarDepartamento);
+router.post("/departament", upload, publicarDepartamento);
+router.get("/arrendador/:id", obtenerDepartamentosPorArrendador);
 
 export default router;

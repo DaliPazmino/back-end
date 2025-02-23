@@ -1,5 +1,5 @@
 // models/Departamento.js
-import { Schema, model } from "mongoose";
+import mongoose, { Schema, model } from "mongoose";
 
 const DepartamentoSchema = new Schema({
   titulo: {
@@ -31,6 +31,12 @@ const DepartamentoSchema = new Schema({
     default: Date.now,
   },
   aprobado: { type: Boolean, default: false }, // El campo de aprobación
+  disponible: { type: Boolean, default: true }, // El campo de disponibilidad ,
+  arrendador: {
+    type: mongoose.Schema.Types.ObjectId,
+    ref: "User",
+    required: true,
+  },
 });
 
 export default model("Departament", DepartamentoSchema);
