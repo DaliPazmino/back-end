@@ -4,75 +4,46 @@ import User from "../models/User.js";
 // Controlador para aprobar un departamento
 export async function aprobarDepartamento(req, res) {
   try {
-    // Verificar que el usuario tiene el rol de administrador
-    if (req.user.role !== "admin") {
-      return res.status(403).json({
-        message:
-          "Acción no permitida. Solo administradores pueden aprobar departamentos.",
-      });
+    const { id } = req.params;
+    const arrendador = await Departament.findByIdAndUpdate(
+      id,
+      { aprobado: true },
+      { new: true }
+    );
+
+    if (!arrendador) {
+      return res.status(404).json({ message: "departamento no encontrado" });
     }
 
-    const { id } = req.params; // ID del departamento a aprobar
-
-    // Buscar el departamento en la base de datos
-    const departamento = await Departament.findById(id);
-
-    if (!departamento) {
-      return res.status(404).json({ message: "Departamento no encontrado" });
-    }
-
-    // Actualizar el estado de aprobado a true
-    departamento.aprobado = true;
-
-    // Guardar los cambios
-    await departamento.save();
-
-    res
-      .status(200)
-      .json({ message: "Departamento aprobado correctamente", departamento });
+    res.status(200).json({ message: "Departamento aprobado", arrendador });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
       .json({ message: "Error al aprobar el departamento", error });
-
-    console.log(error);
   }
 }
 
 // Controlador para desaprobar un departamento
 export async function desaprobarDepartamento(req, res) {
   try {
-    // Verificar que el usuario tiene el rol de administrador
-    if (req.user.role !== "admin") {
-      return res.status(403).json({
-        message:
-          "Acción no permitida. Solo administradores pueden desaprobar departamentos.",
-      });
+    const { id } = req.params;
+    const arrendador = await Departament.findByIdAndUpdate(
+      id,
+      { aprobado: false },
+      { new: true }
+    );
+
+    if (!arrendador) {
+      return res.status(404).json({ message: "departamento no encontrado" });
     }
 
-    const { id } = req.params; // ID del departamento a desaprobar
-
-    // Buscar el departamento en la base de datos
-    const departamento = await Departament.findById(id);
-
-    if (!departamento) {
-      return res.status(404).json({ message: "Departamento no encontrado" });
-    }
-
-    // Actualizar el estado de aprobado a false
-    departamento.aprobado = false;
-
-    // Guardar los cambios
-    await departamento.save();
-
-    res.status(200).json({
-      message: "Departamento desaprobado correctamente",
-      departamento,
-    });
+    res.status(200).json({ message: "Departamento aprobado", arrendador });
   } catch (error) {
+    console.log(error);
     res
       .status(500)
-      .json({ message: "Error al desaprobar el departamento", error });
+      .json({ message: "Error al aprobar el departamento", error });
   }
 }
 
@@ -116,16 +87,51 @@ export async function aprobarArrendador(req, res) {
 export async function desactivarArrendador(req, res) {
   try {
     const { id } = req.params;
-    const arrendador = await User.findById(id);
-
-    arrendador.verificado = false;
+    const arrendador = await User.findByIdAndUpdate(
+      id,
+      { verificado: false },
+      { new: true }
+    );
 
     if (!arrendador) {
       return res.status(404).json({ message: "Arrendador no encontrado" });
     }
 
-    res.status(200).json({ message: "Arrendador eliminado correctamente" });
+    res.status(200).json({ message: "Arrendador desactivado", arrendador });
   } catch (error) {
-    res.status(500).json({ message: "Error al eliminar el arrendador", error });
+    console.log(error);
+    res
+      .status(500)
+      .json({ message: "Error al desactivar el arrendador", error });
+  }
+}
+
+export async function obtenerDepartamentosVerificacion(req, res) {
+  try {
+    // Obtener todos los departamentos desde la base de datos
+    const departamentos = await Departament.find();
+
+    res.status(200).json(departamentos);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los departamentos", error });
+    console.log(error);
+  }
+}
+
+export async function obtenerDepartamentos(req, res) {
+  try {
+    const departamentosAprobados = await Departament.find({
+      aprobado: true,
+      disponible: true,
+    });
+
+    res.status(200).json(departamentosAprobados);
+  } catch (error) {
+    res
+      .status(500)
+      .json({ message: "Error al obtener los departamentos", error });
+    console.log(error);
   }
 }

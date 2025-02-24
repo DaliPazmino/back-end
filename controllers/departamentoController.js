@@ -26,7 +26,7 @@ export function publicarDepartamento(req, res) {
     } = req.body;
 
     // Asegúrate de que las fotos estén siendo manejadas correctamente por multer
-    /*    const fotos = req.files ? req.files.map((file) => file.path) : []; */
+    /* const fotos = req.files ? req.files.map((file) => file.path) : []; */
 
     // Crear el nuevo departamento
     const nuevoDepartamento = new Departament({

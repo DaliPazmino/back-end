@@ -7,6 +7,8 @@ import {
   desactivarArrendador,
   desaprobarDepartamento,
   obtenerArrendadoresPendientes,
+  obtenerDepartamentos,
+  obtenerDepartamentosVerificacion,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -23,10 +25,19 @@ router.put(
 
 // Rutas protegidas solo para administradores
 router.get(
-  "/arrendadores-pendientes",
+  "/arrendadores/verificacion",
   authenticate,
   obtenerArrendadoresPendientes
 );
+
+router.get(
+  "/departamentos/verificacion",
+  authenticate,
+  obtenerDepartamentosVerificacion
+);
+
+router.get("/departamentos", authenticate, obtenerDepartamentos);
+
 router.put("/aprobar-arrendador/:id", authenticate, aprobarArrendador);
 router.put("/desactivar-arrendador/:id", authenticate, desactivarArrendador);
 export default router;
