@@ -14,35 +14,52 @@ const storage = multer.diskStorage({
 const upload = multer({ storage: storage }).array("fotos", 5); // Permitir hasta 5 fotos
 
 export function publicarDepartamento(req, res) {
-  if (!req.user || req.user.role !== "arrendador") {
-    return res
-      .status(403)
-      .json({ message: "Solo los arrendadores pueden publicar departamentos" });
+  try {
+    const {
+      titulo,
+      descripcion,
+      precio,
+      caracteristicas,
+      condiciones,
+      habitaciones,
+      ubicacion,
+    } = req.body;
+
+    // Asegúrate de que las fotos estén siendo manejadas correctamente por multer
+    /*    const fotos = req.files ? req.files.map((file) => file.path) : []; */
+
+    // Crear el nuevo departamento
+    const nuevoDepartamento = new Departament({
+      titulo,
+      descripcion,
+      precio,
+      caracteristicas,
+      condiciones,
+      disponible: true,
+      habitaciones,
+      ubicacion,
+      aprobado: false,
+      arrendador: req.user.id, // Asociar al arrendador autenticado
+    });
+
+    // Guardar el departamento
+    nuevoDepartamento
+      .save()
+      .then((departamento) => res.status(201).json(departamento))
+      .catch((error) => {
+        // Imprimir el error en la consola
+        console.log("Error al guardar el departamento:", error);
+
+        // Enviar la respuesta con el error
+        res
+          .status(500)
+          .json({ message: "Error al guardar el departamento", error });
+      });
+  } catch (error) {
+    // Capturar cualquier error inesperado
+    res.status(500).json({ message: "Error interno en el servidor", error });
+    console.error(error);
   }
-
-  const { titulo, descripcion, precio, caracteristicas, condiciones } =
-    req.body;
-  /*  const fotos = req.files ? req.files.map((file) => file.path) : []; */
-
-  const nuevoDepartamento = new Departament({
-    titulo,
-    descripcion,
-    precio,
-    caracteristicas,
-    condiciones,
-    disponible: true,
-    aprobado: false,
-    arrendador: req.user.id, // Asociar al arrendador autenticado
-  });
-
-  nuevoDepartamento
-    .save()
-    .then((departamento) => res.status(201).json(departamento))
-    .catch((error) =>
-      res
-        .status(500)
-        .json({ message: "Error al guardar el departamento", error })
-    );
 }
 
 export default upload;
@@ -114,8 +131,15 @@ export async function obtenerDepartamentosPorArrendador(req, res) {
 }
 export async function obtenerDepartamentosDisponibles(req, res) {
   try {
+    if (!req.user || !req.user.id) {
+      return res.status(401).json({ message: "Usuario no autenticado" });
+    }
+
+    const arrendadorId = req.user.id; // Obtén el ID del arrendador autenticado
+
     const departamentosDisponibles = await Departament.find({
       disponible: true, // Solo los departamentos que están disponibles
+      arrendador: arrendadorId, // Del arrendador autenticado
     });
 
     if (departamentosDisponibles.length === 0) {
@@ -152,16 +176,26 @@ export async function filtrarDepartamentos(req, res) {
     const departamentos = await Departament.find(filtro);
 
     if (departamentos.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message:
-            "No se encontraron departamentos con los filtros seleccionados.",
-        });
+      return res.status(404).json({
+        message:
+          "No se encontraron departamentos con los filtros seleccionados.",
+      });
     }
 
     res.status(200).json(departamentos);
   } catch (error) {
     res.status(500).json({ message: "Error al filtrar departamentos", error });
+  }
+}
+
+export async function obtenerDepartamento(req, res) {
+  try {
+    const departamento = await Departament.findById(req.params.id);
+    if (!departamento) {
+      return res.status(404).json({ message: "Departamento no encontrado" });
+    }
+    res.json(departamento);
+  } catch (error) {
+    res.status(500).json({ message: "Error al obtener el departamento" });
   }
 }
