@@ -1,7 +1,6 @@
 import Departament from "../models/Departament.js";
 import User from "../models/User.js";
 
-// Controlador para aprobar un departamento
 export async function aprobarDepartamento(req, res) {
   try {
     const { id } = req.params;
@@ -24,7 +23,6 @@ export async function aprobarDepartamento(req, res) {
   }
 }
 
-// Controlador para desaprobar un departamento
 export async function desaprobarDepartamento(req, res) {
   try {
     const { id } = req.params;
@@ -47,8 +45,7 @@ export async function desaprobarDepartamento(req, res) {
   }
 }
 
-// Obtener todos los arrendadores no verificados
-export async function obtenerArrendadoresPendientes(req, res) {
+export async function obtenerArrendadores(req, res) {
   try {
     const arrendadores = await User.find({
       role: "arrendador",
@@ -62,7 +59,6 @@ export async function obtenerArrendadoresPendientes(req, res) {
   }
 }
 
-// Aprobar arrendador
 export async function aprobarArrendador(req, res) {
   try {
     const { id } = req.params;
@@ -83,7 +79,6 @@ export async function aprobarArrendador(req, res) {
   }
 }
 
-// Desactivar cuenta de arrendador
 export async function desactivarArrendador(req, res) {
   try {
     const { id } = req.params;
@@ -106,28 +101,12 @@ export async function desactivarArrendador(req, res) {
   }
 }
 
-export async function obtenerDepartamentosVerificacion(req, res) {
+export async function obtenerDepartamentos(req, res) {
   try {
     // Obtener todos los departamentos desde la base de datos
     const departamentos = await Departament.find();
 
     res.status(200).json(departamentos);
-  } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener los departamentos", error });
-    console.log(error);
-  }
-}
-
-export async function obtenerDepartamentos(req, res) {
-  try {
-    const departamentosAprobados = await Departament.find({
-      aprobado: true,
-      disponible: true,
-    });
-
-    res.status(200).json(departamentosAprobados);
   } catch (error) {
     res
       .status(500)

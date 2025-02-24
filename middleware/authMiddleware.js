@@ -37,3 +37,21 @@ export const isArrendador = (req, res, next) => {
     .status(403)
     .json({ message: "Acción solo permitida para arrendadores" });
 };
+
+export const isAdmin = (req, res, next) => {
+  if (req.user && req.user.role === "admin") {
+    return next(); // El usuario es arrendador, continuar
+  }
+  return res
+    .status(403)
+    .json({ message: "Acción solo permitida para administradores" });
+};
+
+export const isArrendatario = (req, res, next) => {
+  if (req.user && req.user.role === "arrendatario") {
+    return next(); // El usuario es arrendador, continuar
+  }
+  return res
+    .status(403)
+    .json({ message: "Acción solo permitida para arrendatarios" });
+};
