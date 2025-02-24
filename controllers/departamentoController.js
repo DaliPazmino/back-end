@@ -129,33 +129,6 @@ export async function obtenerDepartamentosPorArrendador(req, res) {
       .json({ message: "Error al obtener los departamentos", error });
   }
 }
-export async function obtenerDepartamentosDisponibles(req, res) {
-  try {
-    if (!req.user || !req.user.id) {
-      return res.status(401).json({ message: "Usuario no autenticado" });
-    }
-
-    const arrendadorId = req.user.id; // Obtén el ID del arrendador autenticado
-
-    const departamentosDisponibles = await Departament.find({
-      disponible: true, // Solo los departamentos que están disponibles
-      arrendador: arrendadorId, // Del arrendador autenticado
-    });
-
-    if (departamentosDisponibles.length === 0) {
-      return res
-        .status(404)
-        .json({ message: "No tienes departamentos disponibles" });
-    }
-
-    res.status(200).json(departamentosDisponibles);
-  } catch (error) {
-    res.status(500).json({
-      message: "Error al obtener los departamentos disponibles",
-      error: error.message || error,
-    });
-  }
-}
 
 export async function filtrarDepartamentos(req, res) {
   try {
