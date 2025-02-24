@@ -1,5 +1,5 @@
 import express from "express";
-import {
+import upload, {
   publicarDepartamento,
   obtenerDepartamentosPorArrendador,
   actualizarDepartamento,
@@ -10,9 +10,21 @@ import { authenticate, isArrendador } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
-router.post("/departamento", authenticate, isArrendador, publicarDepartamento);
+router.post(
+  "/departamento",
+  authenticate,
+  isArrendador,
+  upload,
+  publicarDepartamento
+);
 router.get("/departamentos/arrendador/:id", obtenerDepartamentosPorArrendador);
-router.patch("/departamento/:id", actualizarDepartamento);
+router.patch(
+  "/departamento/:id",
+  authenticate,
+  isArrendador,
+  upload,
+  actualizarDepartamento
+);
 router.get("/filtrar", filtrarDepartamentos);
 router.get("/departamentos/:id", obtenerDepartamento);
 

@@ -8,12 +8,7 @@ import {
   obtenerArrendadores,
   obtenerDepartamentos,
 } from "../controllers/adminController.js";
-import {
-  authenticate,
-  isAdmin,
-  isArrendador,
-  isArrendatario,
-} from "../middleware/authMiddleware.js";
+import { authenticate, isAdmin } from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
