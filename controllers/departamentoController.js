@@ -198,13 +198,19 @@ export async function filtrarDepartamentos(req, res) {
 
 export async function obtenerDepartamento(req, res) {
   try {
-    const departamento = await Departament.find();
+    const { id } = req.params;
+
+    // Buscar el departamento en la base de datos
+    const departamento = await Departament.findById(id);
     if (!departamento) {
-      return res.status(404).json({ message: "Departamento no encontrado" });
+      return res.status(404).json({ mensaje: "Departamento no encontrado" });
     }
+
     res.json(departamento);
   } catch (error) {
-    res.status(500).json({ message: "Error al obtener el departamento" });
-    console.log(error);
+    console.error("Error al obtener el departamento:", error);
+    res
+      .status(500)
+      .json({ mensaje: "Error al obtener el departamento", error });
   }
 }
