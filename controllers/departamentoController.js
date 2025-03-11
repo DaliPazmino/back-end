@@ -214,3 +214,26 @@ export async function obtenerDepartamento(req, res) {
       .json({ mensaje: "Error al obtener el departamento", error });
   }
 }
+
+export async function obtenerTodosDepartamentos(req, res) {
+  try {
+    // Buscar todos los departamentos donde 'disponible' y 'verificacion' sean true
+    const departamentos = await Departament.find({
+      disponible: true,
+      verificacion: true,
+    });
+
+    if (departamentos.length === 0) {
+      return res.status(404).json({
+        mensaje: "No se encontraron departamentos disponibles y verificados",
+      });
+    }
+
+    res.json(departamentos);
+  } catch (error) {
+    console.error("Error al obtener los departamentos:", error);
+    res
+      .status(500)
+      .json({ mensaje: "Error al obtener los departamentos", error });
+  }
+}

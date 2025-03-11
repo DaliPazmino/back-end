@@ -53,5 +53,5 @@ export const isArrendatario = (req, res, next) => {
   }
   return res
     .status(403)
-    .json({ message: "Acción solo permitida para arrendatarios" });
+    .json({ message: "Acción solo permitida para arrendadores" });
 };

@@ -5,6 +5,7 @@ import upload, {
   actualizarDepartamento,
   filtrarDepartamentos,
   obtenerDepartamento,
+  obtenerTodosDepartamentos,
 } from "../controllers/departamentoController.js";
 import { authenticate, isArrendador } from "../middleware/authMiddleware.js";
 
@@ -27,5 +28,6 @@ router.patch(
 );
 router.get("/filtrar", filtrarDepartamentos);
 router.get("/departamentos/:id", obtenerDepartamento);
+router.get("/departamentos", obtenerTodosDepartamentos);
 
 export default router;

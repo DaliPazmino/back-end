@@ -40,6 +40,7 @@ const DepartamentoSchema = new Schema({
     ref: "User",
     required: true,
   },
+  comentarios: [{ type: mongoose.Schema.Types.ObjectId, ref: "Review" }], // Relación con comentarios
 });
 
 export default model("Departament", DepartamentoSchema);
