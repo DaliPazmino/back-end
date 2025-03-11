@@ -45,25 +45,28 @@ export async function crearComentario(req, res) {
     res.status(500).json({ mensaje: "Error al crear el comentario", error });
   }
 }
-
 export async function obtenerDepartamentosConComentarios(req, res) {
   try {
-    const { id } = req.params; // ID del departamento pasado como parámetro
+    const { id } = req.params;
 
-    // Buscar el departamento y poblar los comentarios con los datos del arrendatario
-    const departamento = await Departament.findById(id).populate({
-      path: "comentarios", // Poblar los comentarios
-      populate: {
-        path: "arrendatario", // Poblar la información del arrendatario en cada comentario
-        select: "nombre correo", // Solo traemos los campos de nombre y correo
-      },
-    });
+    const departamentos = await Departament.findById(id)
+      .populate({
+        path: "arrendador", // Poblar la información del arrendador
+        select: "nombre email", // Puedes agregar más campos si lo deseas
+      })
+      .populate({
+        path: "comentarios",
+        populate: {
+          path: "arrendatario",
+          select: "nombre email", // Poblar la información del arrendatario en los comentarios
+        },
+      });
 
-    if (!departamento) {
+    if (!departamentos) {
       return res.status(404).json({ mensaje: "Departamento no encontrado" });
     }
 
-    res.status(200).json(departamento); // Retornamos el departamento con los comentarios poblados
+    res.status(200).json(departamentos);
   } catch (error) {
     console.error(error);
     res

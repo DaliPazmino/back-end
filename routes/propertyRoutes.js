@@ -7,7 +7,11 @@ import upload, {
   obtenerDepartamento,
   obtenerTodosDepartamentos,
 } from "../controllers/departamentoController.js";
-import { authenticate, isArrendador } from "../middleware/authMiddleware.js";
+import {
+  authenticate,
+  isAprobado,
+  isArrendador,
+} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -15,6 +19,7 @@ router.post(
   "/departamento",
   authenticate,
   isArrendador,
+  isAprobado,
   upload,
   publicarDepartamento
 );
