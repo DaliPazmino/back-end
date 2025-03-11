@@ -101,16 +101,30 @@ export async function desactivarArrendador(req, res) {
   }
 }
 
-export async function obtenerDepartamentos(req, res) {
+export async function obtenerDepartamentosPorVerificar2(req, res) {
   try {
-    // Obtener todos los departamentos desde la base de datos
-    const departamentos = await Departament.find();
+    const departamentos = await Departament.find({ aprobado: false });
 
     res.status(200).json(departamentos);
   } catch (error) {
-    res
-      .status(500)
-      .json({ message: "Error al obtener los departamentos", error });
     console.log(error);
+    res.status(500).json({
+      message: "Error al obtener los departamentos verificados",
+      error,
+    });
+  }
+}
+
+export async function obtenerDepartamentosPorVerificar(req, res) {
+  try {
+    const departamentos = await Departament.find(); /* ({ aprobado: true }); */
+
+    res.status(200).json(departamentos);
+  } catch (error) {
+    console.log(error);
+    res.status(500).json({
+      message: "Error al obtener los departamentos verificados",
+      error,
+    });
   }
 }

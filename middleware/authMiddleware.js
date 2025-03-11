@@ -38,6 +38,17 @@ export const isArrendador = (req, res, next) => {
     .json({ message: "Acción solo permitida para arrendadores" });
 };
 
+export const isAprobado = (req, res, next) => {
+  if (req.user && req.user.verificado === true) {
+    return next(); // El arrendador está aprobado, continuar
+  }
+  return res
+    .status(403)
+    .json({
+      message: "El arrendador no está aprobado para realizar esta acción",
+    });
+};
+
 export const isAdmin = (req, res, next) => {
   if (req.user && req.user.role === "admin") {
     return next(); // El usuario es arrendador, continuar
@@ -53,5 +64,5 @@ export const isArrendatario = (req, res, next) => {
   }
   return res
     .status(403)
-    .json({ message: "Acción solo permitida para arrendatarios" });
+    .json({ message: "Acción solo permitida para arrendadores" });
 };

@@ -5,8 +5,13 @@ import upload, {
   actualizarDepartamento,
   filtrarDepartamentos,
   obtenerDepartamento,
+  obtenerTodosDepartamentos,
 } from "../controllers/departamentoController.js";
-import { authenticate, isArrendador } from "../middleware/authMiddleware.js";
+import {
+  authenticate,
+  isAprobado,
+  isArrendador,
+} from "../middleware/authMiddleware.js";
 
 const router = express.Router();
 
@@ -14,6 +19,7 @@ router.post(
   "/departamento",
   authenticate,
   isArrendador,
+  isAprobado,
   upload,
   publicarDepartamento
 );
@@ -27,5 +33,6 @@ router.patch(
 );
 router.get("/filtrar", filtrarDepartamentos);
 router.get("/departamentos/:id", obtenerDepartamento);
+router.get("/departamentos", obtenerTodosDepartamentos);
 
 export default router;

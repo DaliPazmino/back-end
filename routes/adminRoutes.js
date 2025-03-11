@@ -6,7 +6,7 @@ import {
   desactivarArrendador,
   desaprobarDepartamento,
   obtenerArrendadores,
-  obtenerDepartamentos,
+  obtenerDepartamentosPorVerificar,
 } from "../controllers/adminController.js";
 import { authenticate, isAdmin } from "../middleware/authMiddleware.js";
 
@@ -26,10 +26,10 @@ router.put(
   desaprobarDepartamento
 );
 router.get(
-  "/departamentos/verificacion",
+  "/departamentos-verificacion",
   authenticate,
   isAdmin,
-  obtenerDepartamentos
+  obtenerDepartamentosPorVerificar
 );
 
 /* Gestion de Arrendadores */
