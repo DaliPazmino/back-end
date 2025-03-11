@@ -9,7 +9,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename); // Obtener el directorio del archivo actual
 
 export async function actualizarDepartamento(req, res) {
-  const { id } = req.params; // ID del departamento desde la URL
+  const { id } = req.params;
   const {
     titulo,
     descripcion,
@@ -20,10 +20,8 @@ export async function actualizarDepartamento(req, res) {
   } = req.body;
 
   try {
-    // Buscar el departamento existente
     const departamentoExistente = await Departament.findById(id);
 
-    // Si no se encuentra el departamento, devuelve error
     if (!departamentoExistente) {
       return res.status(404).json({ message: "Departamento no encontrado" });
     }
@@ -35,28 +33,14 @@ export async function actualizarDepartamento(req, res) {
       });
     }
 
-    // Obtener las rutas de las fotos antiguas
-    const fotosAntiguas = departamentoExistente.fotos || [];
+    let nuevasFotos = departamentoExistente.fotos; // Mantener imágenes antiguas
 
-    // Eliminar las fotos antiguas del servidor si existen
-    if (fotosAntiguas.length > 0) {
-      fotosAntiguas.forEach((foto) => {
-        const rutaFoto = path.join(__dirname, "..", foto); // Construir la ruta completa
-        // Verificar si la foto existe antes de intentar eliminarla
-        if (fs.existsSync(rutaFoto)) {
-          try {
-            fs.unlinkSync(rutaFoto); // Eliminar el archivo
-          } catch (error) {
-            console.error(`Error al eliminar la foto: ${foto}`, error);
-          }
-        }
-      });
+    // Si se subieron nuevas fotos, reemplazar las antiguas
+    if (req.files && req.files.length > 0) {
+      nuevasFotos = req.files.map((file) => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`);
     }
 
-    // Obtener las rutas de las nuevas fotos subidas
-    const nuevasFotos = req.files ? req.files.map((file) => file.path) : [];
-
-    // Actualizar el departamento con los nuevos datos y las nuevas fotos
+    // Actualizar el departamento con los nuevos datos
     const departamentoActualizado = await Departament.findByIdAndUpdate(
       id,
       {
@@ -66,22 +50,19 @@ export async function actualizarDepartamento(req, res) {
         caracteristicas,
         condiciones,
         disponible,
-        aprobado: false, // Reiniciar la aprobación al actualizar
-        fotos: nuevasFotos, // Actualizar las fotos
+        aprobado: false, // Reiniciar aprobación
+        fotos: nuevasFotos, // Guardar nuevas fotos
       },
-      { new: true } // Devuelve el documento actualizado
+      { new: true }
     );
 
-    // Devuelve el departamento actualizado
     res.status(200).json(departamentoActualizado);
   } catch (error) {
-    // En caso de error al actualizar el departamento
     console.error("Error al actualizar el departamento:", error);
-    res
-      .status(500)
-      .json({ message: "Error al actualizar el departamento", error });
+    res.status(500).json({ message: "Error al actualizar el departamento", error });
   }
 }
+
 
 // Configuración de Multer para subir archivos
 const storage = multer.diskStorage({
@@ -107,8 +88,10 @@ export function publicarDepartamento(req, res) {
       ubicacion,
     } = req.body;
 
-    // Obtener las rutas de las fotos subidas
-    const fotos = req.files ? req.files.map((file) => file.path) : [];
+    // Guardar las rutas de las imágenes subidas
+    const fotos = req.files
+      ? req.files.map((file) => `${req.protocol}://${req.get("host")}/uploads/${file.filename}`)
+      : [];
 
     // Crear el nuevo departamento
     const nuevoDepartamento = new Departament({
@@ -121,25 +104,24 @@ export function publicarDepartamento(req, res) {
       habitaciones,
       ubicacion,
       aprobado: false,
-      arrendador: req.user.id, // Asociar al arrendador autenticado
-      fotos, // Agregar las rutas de las fotos al departamento
+      arrendador: req.user.id,
+      fotos, // Guardar las URLs en la base de datos
     });
 
-    // Guardar el departamento
+    // Guardar en la base de datos
     nuevoDepartamento
       .save()
       .then((departamento) => res.status(201).json(departamento))
       .catch((error) => {
         console.log("Error al guardar el departamento:", error);
-        res
-          .status(500)
-          .json({ message: "Error al guardar el departamento", error });
+        res.status(500).json({ message: "Error al guardar el departamento", error });
       });
   } catch (error) {
     res.status(500).json({ message: "Error interno en el servidor", error });
     console.error(error);
   }
 }
+
 
 export default upload;
 
